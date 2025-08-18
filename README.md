@@ -39,12 +39,12 @@ The methodology is structured in three main stages:
      - `ctganDataGeneration.py`  
    - Predictive model training and evaluation using:  
      - `modelTesting.py`  
-   - This produces results based on a specific data partition and save them in 'executions/individual/<technique>'.
+   - This produces results based on a specific data partition and save them in `executions/individual/<technique>/`.
 
 2. **Generalization execution**  
    - Run `generalizationFlow.py`.  
    - Automates the process of generating synthetic data and evaluating models across multiple partitions. The number of partitions can be specified in TARGET_RUNS. 
-   - Provides metrics on robustness and generalization.
+   - Provides metrics on robustness and generalization and saves them in `executions/summary/` (metrics and confusion matrices) and `executions/run_xxx/ (each execution).
 
 3. **Visualization and interaction**  
    - `exploratoryAnalysis.py` allows exploratory analysis of the dataset, including feature distributions and relationships.
