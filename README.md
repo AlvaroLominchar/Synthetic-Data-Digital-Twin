@@ -21,9 +21,7 @@ Clone the repository and create a virtual environment:
 git clone https://github.com/AlvaroLominchar/Synthetic-Data-Digital-Twin.git
 cd Synthetic-Data-Digital-Twin
 python -m venv venv
-source venv/bin/activate
-# On Windows use:
-# venv\Scripts\activate
+source venv/bin/activate # On Windows use: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 ---
@@ -39,16 +37,20 @@ The methodology is structured in three main stages:
      - `ctganDataGeneration.py`  
    - Predictive model training and evaluation using:  
      - `modelTesting.py`  
-   - This produces results based on a specific data partition and save them in `executions/individual/<technique>/`.
+   - This process generates four Random Forest models along with three synthetic datasets. One model is trained on real data, while the other three are trained on each synthetic dataset. Afterwards, all models are tested on the same subset of real data, corresponding to the initial partition of the dataset, which is synchronized across all scripts. The results are then produced based on this specific data partition and saved in `executions/individual/<technique>/` (default `random_state` for this part is 42).
 
 2. **Generalization execution**  
    - Run `generalizationFlow.py`.  
-   - Automates the process of generating synthetic data and evaluating models across multiple partitions. The number of partitions can be specified in TARGET_RUNS. 
-   - Provides metrics on robustness and generalization and saves them in `executions/summary/` (metrics and confusion matrices) and `executions/run_xxx/` (each execution's datasets and outputs).
+   - This stage automates the full experimental pipeline — generating synthetic data, training predictive models, and evaluating them — across multiple random partitions of the dataset.  
+   - The number of executions is defined by the parameter `TARGET_RUNS`. For each run, synthetic datasets are generated, models are trained, and evaluation metrics are collected.  
+   - Once all runs are completed, results are aggregated to compute averages and variability, providing a more robust estimation of model performance and the benefits of synthetic data.  
+   - Outputs are stored in two locations:  
+     - `executions/summary/`: aggregated metrics and confusion matrices.  
+     - `executions/run_xxx/`: datasets, intermediate files, and outputs for each individual execution.  
 
 3. **Visualization and interaction**  
-   - `exploratoryAnalysis.py` allows exploratory analysis of the dataset, including feature distributions and relationships.
-   - `digitalTwin.py` (Streamlit app) provides an interactive interface for exploring the Digital Twin.  
+   - `exploratoryAnalysis.py` provides tools for exploring the dataset, including visualizations of feature distributions, correlations, and dimensionality reduction. These analyses help to understand the structure of the real dataset before generating synthetic data.  
+   - `digitalTwin.py` is implemented as a Streamlit application that integrates the predictive models into a user-friendly interface. The Digital Twin allows interactive exploration of the system’s behavior, visualizing predictions, monitoring synthetic versus real data performance, and simulating different operational scenarios for predictive maintenance.
 
 ---
 
