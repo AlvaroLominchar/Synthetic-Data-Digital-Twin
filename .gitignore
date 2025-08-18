@@ -1,0 +1,39 @@
+# =========================
+# Archivos de datos (no se suben datasets)
+# =========================
+data/
+
+# =========================
+# Resultados de ejecuciones y salidas
+# =========================
+executions/
+**/outputs/
+**/plots/
+**/metrics/
+**/confusion/
+**/generationRankings/
+
+# =========================
+# Archivos Python temporales
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# =========================
+# Entornos virtuales
+# =========================
+venv/
+.env/
+.venv/
+
+# =========================
+# Archivos de sistema / IDE
+# =========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
