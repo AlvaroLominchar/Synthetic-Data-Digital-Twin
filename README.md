@@ -44,7 +44,7 @@ The methodology is structured in three main stages:
 2. **Generalization execution**  
    - Run `generalizationFlow.py`.  
    - Automates the process of generating synthetic data and evaluating models across multiple partitions. The number of partitions can be specified in TARGET_RUNS. 
-   - Provides metrics on robustness and generalization and saves them in `executions/summary/` (metrics and confusion matrices) and `executions/run_xxx/ (each execution).
+   - Provides metrics on robustness and generalization and saves them in `executions/summary/` (metrics and confusion matrices) and `executions/run_xxx/` (each execution's datasets and outputs).
 
 3. **Visualization and interaction**  
    - `exploratoryAnalysis.py` allows exploratory analysis of the dataset, including feature distributions and relationships.
