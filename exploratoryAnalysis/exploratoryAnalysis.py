@@ -2,12 +2,13 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import os
+from pathlib import Path
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 
 # Configure dataset path and preprocessing parameters
-FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "ai4i2020.xlsx")
+ROOT_DIR = Path(__file__).resolve().parent.parent          # <repo_root>
+FILE_PATH = ROOT_DIR / "data" / "ai4i2020.xlsx"            # <repo_root>/data/ai4i2020.xlsx
 TARGET = "Machine failure"
 NUMERIC_COLS = [
     "Air temperature [K]",
@@ -22,10 +23,8 @@ main_color = "#1A237E"
 secondary_color = "#FF7F0E"
 
 # Set up working directories
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
-PLOTS_DIR = os.path.join(PARENT_DIR, "exploratoryAnalysis")
-os.makedirs(PLOTS_DIR, exist_ok=True)
+PLOTS_DIR = ROOT_DIR / "exploratoryAnalysis"
+PLOTS_DIR.mkdir(parents=True, exist_ok=True)
 
 
 # Main execution
@@ -87,7 +86,7 @@ if __name__ == "__main__":
             plt.tight_layout()
 
             # Save
-            filename = os.path.join(PLOTS_DIR, f"hist_{col.replace(' ', '_')}.png")
+            filename = PLOTS_DIR / f"hist_{col.replace(' ', '_')}.png"
             plt.savefig(filename, dpi=300)
             plt.close()
 
@@ -107,7 +106,7 @@ if __name__ == "__main__":
     plt.tight_layout()
 
     # Save
-    filename_corr = os.path.join(PLOTS_DIR, "correlation_matrix.png")
+    filename_corr = PLOTS_DIR / "correlation_matrix.png"
     plt.savefig(filename_corr, dpi=300)
     plt.close()
 
@@ -150,10 +149,8 @@ if __name__ == "__main__":
         plt.tight_layout()
         
         # Save
-        filename_pca = os.path.join(PLOTS_DIR, "pca_projection.png")
+        filename_pca  = PLOTS_DIR / "pca_projection.png"
         plt.savefig(filename_pca, dpi=300)
         plt.close()
 
-print(f"\n🔷 Exploratory analysis completed on raw data. Plots saved in '{PLOTS_DIR}'.")
-
-
+print(f"\n🔷 Exploratory analysis completed on raw data. Plots saved in '{str(PLOTS_DIR)}'.")
