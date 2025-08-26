@@ -1,6 +1,5 @@
 # Import required libraries and functions
 import streamlit as st
-import os
 import pandas as pd
 import joblib
 import matplotlib.pyplot as plt
@@ -48,7 +47,8 @@ CATEGORICAL = ["Type"]
 RANDOM_STATE = 42
 
 # Base path for individual execution models
-BASE_PATH = Path("C:/Users/Álvaro/Desktop/Analítica de Negocio y Big Data/TFM/Fase Práctica/executions/individual")
+ROOT_DIR = Path(__file__).resolve().parent.parent
+BASE_PATH = ROOT_DIR / "executions" / "individual"
 
 # Load real model
 model_real_path = BASE_PATH / "real" / "model" / "model_real.pkl"
