@@ -16,7 +16,7 @@ warnings.filterwarnings("ignore", message="Trying to unpickle estimator Decision
 warnings.filterwarnings("ignore", message="Downcasting behavior in `replace` is deprecated and will be removed in a future version.")
 
 # Import the auxiliary utility functions
-from utilsDataGeneration import load_and_preprocess_dataset
+from dataGeneration.utilsDataGeneration import load_and_preprocess_dataset
     
 # Custom app
 APP_TITLE = "Implementación de Gemelo Digital Simple"
