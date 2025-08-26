@@ -5,6 +5,7 @@ import joblib
 import matplotlib.pyplot as plt
 import seaborn as sns
 import time
+import sys
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -16,6 +17,9 @@ warnings.filterwarnings("ignore", message="Trying to unpickle estimator Decision
 warnings.filterwarnings("ignore", message="Downcasting behavior in `replace` is deprecated and will be removed in a future version.")
 
 # Import the auxiliary utility functions
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
 from dataGeneration.utilsDataGeneration import load_and_preprocess_dataset
     
 # Custom app
@@ -47,7 +51,6 @@ CATEGORICAL = ["Type"]
 RANDOM_STATE = 42
 
 # Base path for individual execution models
-ROOT_DIR = Path(__file__).resolve().parent.parent
 BASE_PATH = ROOT_DIR / "executions" / "individual"
 
 # Load real model
