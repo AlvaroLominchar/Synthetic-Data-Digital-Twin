@@ -2,7 +2,7 @@
 import pandas as pd
 import time
 import matplotlib
-matplotlib.use("Agg")  # evita problemas de GUI; solo guardamos PNGs
+matplotlib.use("Agg")
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 from imblearn.over_sampling import SMOTE
