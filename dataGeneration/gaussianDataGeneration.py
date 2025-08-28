@@ -1,9 +1,15 @@
 # Import required libraries and functions
 import pandas as pd
 import time
+import sys
 import matplotlib
 matplotlib.use("Agg")
 from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+    
 from sklearn.model_selection import train_test_split
 from itertools import product
 from sdv.single_table import GaussianCopulaSynthesizer
@@ -25,7 +31,6 @@ from utilsDataGeneration import (
 )
 
 # Configure dataset path and preprocessing parameters
-ROOT_DIR = Path(__file__).resolve().parent.parent
 FILE_PATH = ROOT_DIR / "data" / "ai4i2020.xlsx"
 TARGET = "Machine failure"
 DROP_COLS = ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"]
