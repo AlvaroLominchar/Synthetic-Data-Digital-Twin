@@ -1,10 +1,12 @@
 # Import required libraries and functions
-import os
 import pandas as pd
 import numpy as np
 import joblib
-from pathlib import Path
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+import sys
+from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, RandomizedSearchCV
 from sklearn.metrics import (
@@ -13,10 +15,15 @@ from sklearn.metrics import (
 )
 
 # Import the auxiliary utility functions
-from utilsDataGeneration import load_and_preprocess_dataset
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+from dataGeneration.utilsDataGeneration import load_and_preprocess_dataset
 
 # Configure dataset path and preprocessing parameters
-FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "ai4i2020.xlsx")
+FILE_PATH = ROOT_DIR / "data" / "ai4i2020.xlsx"
+if not FILE_PATH.exists():
+    raise FileNotFoundError(f"Dataset not found at: {FILE_PATH}")
 TARGET = "Machine failure"
 DROP_COLS = ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"]
 CATEGORICAL = ["Type"]
@@ -122,7 +129,7 @@ def evaluate_models(output_dir=None, random_state=42):
         base_path = Path(output_dir)
 
     # Load and preprocess the dataset
-    X_real, y_real, df_real = load_and_preprocess_dataset(FILE_PATH, TARGET, DROP_COLS, CATEGORICAL)
+    X_real, y_real, df_real = load_and_preprocess_dataset(str(FILE_PATH), TARGET, DROP_COLS, CATEGORICAL)
     
     # Split the real dataset into 80-20; the 20% is isolated and used to test each model
     X_train_real, X_test_real, y_train_real, y_test_real = train_test_split(
