@@ -20,7 +20,7 @@ import warnings
 warnings.filterwarnings("ignore", message="We strongly recommend saving the metadata using 'save_to_json'")
 
 # Import the auxiliary utility functions
-from utilsDataGeneration import (
+from dataGeneration.utilsDataGeneration import (
     load_and_preprocess_dataset,
     plot_histograms,
     plot_correlation_matrices,
