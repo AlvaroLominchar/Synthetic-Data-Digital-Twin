@@ -4,6 +4,10 @@ import numpy as np
 from pathlib import Path
 import sys
 
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 # Import functions from individual scripts
 from dataGeneration.smoteDataGeneration import main as smote_main
 from dataGeneration.gaussianDataGeneration import main as copula_main
@@ -11,10 +15,6 @@ from dataGeneration.ctganDataGeneration import main as ctgan_main
 from predictiveModels.modelTesting import evaluate_models
 
 # Set up working directories
-ROOT_DIR = Path(__file__).resolve().parent.parent
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
-    
 BASE_EXECUTIONS_DIR = ROOT_DIR / "executions"
 BASE_EXECUTIONS_DIR.mkdir(parents=True, exist_ok=True)
 
