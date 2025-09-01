@@ -1,7 +1,15 @@
 # Import required libraries and functions
 import pandas as pd
-import os
 import time
+import sys
+import matplotlib
+matplotlib.use("Agg")
+from pathlib import Path
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+
 from sklearn.model_selection import train_test_split
 from sdv.single_table import CTGANSynthesizer
 from sdv.metadata import Metadata
@@ -11,7 +19,7 @@ import warnings
 warnings.filterwarnings("ignore", message="We strongly recommend saving the metadata using 'save_to_json'")
 
 # Import the auxiliary utility functions
-from utilsDataGeneration import (
+from dataGeneration.utilsDataGeneration import (
     load_and_preprocess_dataset,
     plot_histograms,
     plot_correlation_matrices,
@@ -22,16 +30,12 @@ from utilsDataGeneration import (
 )
 
 # Configure dataset path and preprocessing parameters
-FILE_PATH = os.path.join(os.path.dirname(__file__), "..", "data", "ai4i2020.xlsx")
+FILE_PATH = ROOT_DIR / "data" / "ai4i2020.xlsx"
 TARGET = "Machine failure"
 DROP_COLS = ["UDI", "Product ID", "TWF", "HDF", "PWF", "OSF", "RNF"]
 CATEGORICAL = ["Type"]
 NUMERIC_COLS = ["Air temperature [K]", "Process temperature [K]",
                 "Rotational speed [rpm]", "Torque [Nm]", "Tool wear [min]"]
-
-# Set up working directories
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-PARENT_DIR = os.path.abspath(os.path.join(BASE_DIR, os.pardir))
 
 # Function to train a CTGAN model on the minority class
 def train_ctgan_model(df_train, target_column, epochs, generator_dim, pac, batch_size):
@@ -138,15 +142,19 @@ def best_ctgan_data(df_train, target_column, n_samples_list, epochs_list, gen_di
 def main(random_state=42, output_dir=None):
 
     # If executed from the generalization script, redirect output paths
-    if output_dir is not None:
-        datasets_path = os.path.join(output_dir, "datasets")
-        rankings_path = os.path.join(output_dir, "generationRankings")
-        plots_path = os.path.join(output_dir, "plots")
+    if output_dir is None:
+        output_dir = ROOT_DIR / "executions" / "individual" / "ctgan"
+    else:
+        output_dir = Path(output_dir)
     
     # Create directories if they do not exist
-    os.makedirs(datasets_path, exist_ok=True)
-    os.makedirs(rankings_path, exist_ok=True)
-    os.makedirs(plots_path, exist_ok=True)
+    datasets_path = output_dir / "datasets"
+    rankings_path = output_dir / "generationRankings"
+    plots_path    = output_dir / "plots"
+
+    datasets_path.mkdir(parents=True, exist_ok=True)
+    rankings_path.mkdir(parents=True, exist_ok=True)
+    plots_path.mkdir(parents=True, exist_ok=True)
    
     # Measure execution time for the generation workflow    
     start_time = time.time()
@@ -162,8 +170,11 @@ def main(random_state=42, output_dir=None):
     ]
     num_samples_list = [1661, 2048, 2434]
 
+    if not FILE_PATH.exists():
+        raise FileNotFoundError(f"Dataset not found at: {FILE_PATH}")
+
     # Load and preprocess the dataset
-    X, y, df_clean = load_and_preprocess_dataset(FILE_PATH, TARGET, DROP_COLS, CATEGORICAL)
+    X, y, df_clean = load_and_preprocess_dataset(str(FILE_PATH), TARGET, DROP_COLS, CATEGORICAL)
 
     # Split the real dataset into 80-20; only the 80% is used for synthetic data generation
     X_train, X_test, y_train, y_test = train_test_split(
@@ -195,7 +206,7 @@ def main(random_state=42, output_dir=None):
     df_avg["total_rank"] = df_avg.index + 1
 
     # Save the ranking to a CSV file
-    df_avg.to_csv(os.path.join(rankings_path, "ranking_ctgan.csv"), index=False, sep=';')
+    df_avg.to_csv(rankings_path / "ranking_ctgan.csv", index=False, sep=';')
 
     # Extract the top combination from the ranking
     best_params = df_avg.iloc[0]
@@ -211,23 +222,23 @@ def main(random_state=42, output_dir=None):
     df_ctgan_final = datasets_generated[best_key]
 
     # Save the final synthetic dataset to the corresponding folder
-    df_ctgan_final.to_csv(os.path.join(datasets_path, "synthetic_ctgan.csv"), index=False)
+    df_ctgan_final.to_csv(datasets_path / "synthetic_ctgan.csv", index=False)
 
     # Generate and save comparative histograms
-    plot_histograms(df_clean.iloc[y_train.index], df_ctgan_final, NUMERIC_COLS, title_label="CTGAN", save_dir=plots_path)
+    plot_histograms(df_clean.iloc[y_train.index], df_ctgan_final, NUMERIC_COLS, title_label="CTGAN", save_dir=str(plots_path))
 
     # Generate and save comparative correlation matrix
     plot_correlation_matrices(df_clean.iloc[y_train.index][NUMERIC_COLS],
-                              df_ctgan_final[NUMERIC_COLS],
-                              "CTGAN",
-                              save_path=os.path.join(plots_path, "correlation_ctgan.png"))
+                          df_ctgan_final[NUMERIC_COLS],
+                          "CTGAN",
+                          save_path=str(plots_path / "correlation_ctgan.png"))
 
     # Generate and save PCA comparison plots
     plot_pca_comparison(df_clean.iloc[y_train.index],
-                        df_ctgan_final,
-                        NUMERIC_COLS,
-                        "CTGAN",
-                        save_path=os.path.join(plots_path, "pca_ctgan.png"))
+                    df_ctgan_final,
+                    NUMERIC_COLS,
+                    "CTGAN",
+                    save_path=str(plots_path / "pca_ctgan.png"))
 
     # Compute evaluation metrics for the final dataset
     jsd = compute_jsd_for_columns(df_clean.iloc[y_train.index], df_ctgan_final, NUMERIC_COLS)
@@ -243,13 +254,9 @@ def main(random_state=42, output_dir=None):
         print(f"-{col:<25} JSD: {jsd[col]:.4f}")
     print(f"\n-MAE correlation: {corr['MAE']:.4f} | Frobenius: {corr['Frobenius']:.4f}")
     print(f"\n-PCA centroid distance: {dist:.4f}")
-    print(f"\n🔷 Plots successfully saved in: {plots_path}")
+    print(f"\n🔷 Plots successfully saved in: {str(plots_path)}")
 
 
 # This script can also be executed individually and the results will be saved in an isolated folder
 if __name__ == "__main__":
-    individual_path = os.path.join(PARENT_DIR, "executions", "individual", "ctgan")
-    os.makedirs(os.path.join(individual_path, "datasets"), exist_ok=True)
-    os.makedirs(os.path.join(individual_path, "plots"), exist_ok=True)
-    os.makedirs(os.path.join(individual_path, "generationRankings"), exist_ok=True)
-    main(output_dir=individual_path)
+    main()

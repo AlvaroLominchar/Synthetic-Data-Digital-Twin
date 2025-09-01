@@ -1,9 +1,4 @@
 # =========================
-# Archivos de datos (no se suben datasets)
-# =========================
-data/
-
-# =========================
 # Resultados de ejecuciones y salidas
 # =========================
 executions/
